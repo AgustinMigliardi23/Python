@@ -1,6 +1,6 @@
-import pyowm
 import requests
 import datetime as dt
+import phrases
 
 KELVIN = 273.15
 
@@ -10,10 +10,28 @@ def get_obj(day, data):
             return forecast
     return None
 
+def get_weather_now(day):
+    try:
+        url = "http://api.openweathermap.org/data/2.5/weather?q=Buenos Aires&appid=8e5b09317f9f795dc7a425b969cae64c"
+        res = requests.get(url)
+        data = res.json()
+    except:
+        return "No Internet"
+    temp = str(int(data["main"]["temp"] - KELVIN))
+    feels_like = str(int(data["main"]["feels_like"] - KELVIN))
+    humidity = data["main"]["humidity"]
+    sky = phrases.get_sky(data["weather"][0]["main"])
+    sky_description = phrases.get_sky_description(data["weather"][0]["description"])
+
+    return day, (temp, feels_like), humidity, (sky, sky_description)
+
 def get_data():
-    url = "http://api.openweathermap.org/data/2.5/forecast?q=Buenos Aires&appid=8e5b09317f9f795dc7a425b969cae64c"
-    res = requests.get(url)
-    data = res.json()
+    try:
+        url = "http://api.openweathermap.org/data/2.5/forecast?q=Buenos Aires&appid=8e5b09317f9f795dc7a425b969cae64c"
+        res = requests.get(url)
+        data = res.json()
+    except:
+        return "No Internet"
 
     today = dt.datetime.now()
 
